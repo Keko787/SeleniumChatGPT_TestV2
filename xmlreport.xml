@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="6" skipped="0" tests="8" time="345.979" timestamp="2024-04-18T12:37:23.946077" hostname="WIN-EL7Q5TVUKSP"><testcase classname="unitTests.test_basic_test.TestChatGpt" name="test_single" time="6.112"><failure message="selenium.common.exceptions.NoSuchElementException: Message: no such element: Unable to locate element: {&quot;method&quot;:&quot;xpath&quot;,&quot;selector&quot;:&quot;/html/body/div[1]/div[1]/div[2]/main/div[2]/div[2]/form/div/div[2]/div/textarea&quot;}&#10;  (Session info: chrome=123.0.6312.123); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception&#10;Stacktrace:&#10;&#09;GetHandleVerifier [0x00D74CA3+225091]&#10;&#09;(No symbol) [0x00CA4DF1]&#10;&#09;(No symbol) [0x00B49A7A]&#10;&#09;(No symbol) [0x00B8175B]&#10;&#09;(No symbol) [0x00B8188B]&#10;&#09;(No symbol) [0x00BB7882]&#10;&#09;(No symbol) [0x00B9F5A4]&#10;&#09;(No symbol) [0x00BB5CB0]&#10;&#09;(No symbol) [0x00B9F2F6]&#10;&#09;(No symbol) [0x00B779B9]&#10;&#09;(No symbol) [0x00B7879D]&#10;&#09;sqlite3_dbdata_init [0x011E9A43+4064547]&#10;&#09;sqlite3_dbdata_init [0x011F104A+4094762]&#10;&#09;sqlite3_dbdata_init [0x011EB948+4072488]&#10;&#09;sqlite3_dbdata_init [0x00EEC9A9+930953]&#10;&#09;(No symbol) [0x00CB07C4]&#10;&#09;(No symbol) [0x00CAACE8]&#10;&#09;(No symbol) [0x00CAAE11]&#10;&#09;(No symbol) [0x00C9CA80]&#10;&#09;BaseThreadInitThunk [0x763C7BA9+25]&#10;&#09;RtlInitializeExceptionChain [0x7786BE3B+107]&#10;&#09;RtlClearBits [0x7786BDBF+191]">self = &lt;test_basic_test.TestChatGpt object at 0x000001D804AB2020&gt;, chatbot = &lt;ChatGPTScraper.ChatGpt object at 0x000001D804AB3130&gt;
+
+    def test_single(self, chatbot):
+        chatbot.openChatGpt()
+&gt;       responseString = chatbot.sendFirstMessage("Hello ChatGPT")
+
+unitTests\test_basic_test.py:18: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+unitTests\ChatGPTScraper.py:105: in sendFirstMessage
+    self.chatbox_element = self.driver.find_element(*self.chatbox_locator)
+.venv\lib\site-packages\selenium\webdriver\remote\webdriver.py:741: in find_element
+    return self.execute(Command.FIND_ELEMENT, {"using": by, "value": value})["value"]
+.venv\lib\site-packages\selenium\webdriver\remote\webdriver.py:347: in execute
+    self.error_handler.check_response(response)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x000001D804AB3190&gt;
+response = {'status': 404, 'value': '{"value":{"error":"no such element","message":"no such element: Unable to locate element: {\...dInitThunk [0x763C7BA9+25]\\n\\tRtlInitializeExceptionChain [0x7786BE3B+107]\\n\\tRtlClearBits [0x7786BDBF+191]\\n"}}'}
+
+    def check_response(self, response: Dict[str, Any]) -&gt; None:
+        """Checks that a JSON response from the WebDriver does not have an
+        error.
+    
+        :Args:
+         - response - The JSON response from the WebDriver server as a dictionary
+           object.
+    
+        :Raises: If the response contains an error message.
+        """
+        status = response.get("status", None)
+        if not status or status == ErrorCode.SUCCESS:
+            return
+        value = None
+        message = response.get("message", "")
+        screen: str = response.get("screen", "")
+        stacktrace = None
+        if isinstance(status, int):
+            value_json = response.get("value", None)
+            if value_json and isinstance(value_json, str):
+                import json
+    
+                try:
+                    value = json.loads(value_json)
+                    if len(value) == 1:
+                        value = value["value"]
+                    status = value.get("error", None)
+                    if not status:
+                        status = value.get("status", ErrorCode.UNKNOWN_ERROR)
+                        message = value.get("value") or value.get("message")
+                        if not isinstance(message, str):
+                            value = message
+                            message = message.get("message")
+                    else:
+                        message = value.get("message", None)
+                except ValueError:
+                    pass
+    
+        exception_class: Type[WebDriverException]
+        e = ErrorCode()
+        error_codes = [item for item in dir(e) if not item.startswith("__")]
+        for error_code in error_codes:
+            error_info = getattr(ErrorCode, error_code)
+            if isinstance(error_info, list) and status in error_info:
+                exception_class = getattr(ExceptionMapping, error_code, WebDriverException)
+                break
+        else:
+            exception_class = WebDriverException
+    
+        if not value:
+            value = response["value"]
+        if isinstance(value, str):
+            raise exception_class(value)
+        if message == "" and "message" in value:
+            message = value["message"]
+    
+        screen = None  # type: ignore[assignment]
+        if "screen" in value:
+            screen = value["screen"]
+    
+        stacktrace = None
+        st_value = value.get("stackTrace") or value.get("stacktrace")
+        if st_value:
+            if isinstance(st_value, str):
+                stacktrace = st_value.split("\n")
+            else:
+                stacktrace = []
+                try:
+                    for frame in st_value:
+                        line = frame.get("lineNumber", "")
+                        file = frame.get("fileName", "&lt;anonymous&gt;")
+                        if line:
+                            file = f"{file}:{line}"
+                        meth = frame.get("methodName", "&lt;anonymous&gt;")
+                        if "className" in frame:
+                            meth = f"{frame['className']}.{meth}"
+                        msg = "    at %s (%s)"
+                        msg = msg % (meth, file)
+                        stacktrace.append(msg)
+                except TypeError:
+                    pass
+        if exception_class == UnexpectedAlertPresentException:
+            alert_text = None
+            if "data" in value:
+                alert_text = value["data"].get("text")
+            elif "alert" in value:
+                alert_text = value["alert"].get("text")
+            raise exception_class(message, screen, stacktrace, alert_text)  # type: ignore[call-arg]  # mypy is not smart enough here
+&gt;       raise exception_class(message, screen, stacktrace)
+E       selenium.common.exceptions.NoSuchElementException: Message: no such element: Unable to locate element: {"method":"xpath","selector":"/html/body/div[1]/div[1]/div[2]/main/div[2]/div[2]/form/div/div[2]/div/textarea"}
+E         (Session info: chrome=123.0.6312.123); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+E       Stacktrace:
+E       	GetHandleVerifier [0x00D74CA3+225091]
+E       	(No symbol) [0x00CA4DF1]
+E       	(No symbol) [0x00B49A7A]
+E       	(No symbol) [0x00B8175B]
+E       	(No symbol) [0x00B8188B]
+E       	(No symbol) [0x00BB7882]
+E       	(No symbol) [0x00B9F5A4]
+E       	(No symbol) [0x00BB5CB0]
+E       	(No symbol) [0x00B9F2F6]
+E       	(No symbol) [0x00B779B9]
+E       	(No symbol) [0x00B7879D]
+E       	sqlite3_dbdata_init [0x011E9A43+4064547]
+E       	sqlite3_dbdata_init [0x011F104A+4094762]
+E       	sqlite3_dbdata_init [0x011EB948+4072488]
+E       	sqlite3_dbdata_init [0x00EEC9A9+930953]
+E       	(No symbol) [0x00CB07C4]
+E       	(No symbol) [0x00CAACE8]
+E       	(No symbol) [0x00CAAE11]
+E       	(No symbol) [0x00C9CA80]
+E       	BaseThreadInitThunk [0x763C7BA9+25]
+E       	RtlInitializeExceptionChain [0x7786BE3B+107]
+E       	RtlClearBits [0x7786BDBF+191]
+
+.venv\lib\site-packages\selenium\webdriver\remote\errorhandler.py:229: NoSuchElementException</failure></testcase><testcase classname="unitTests.test_basic_test.TestChatGpt" name="test_multiple" time="24.843" /><testcase classname="unitTests.test_calculation_test.TestCalculation" name="test_arithmetic" time="48.281"><failure message="AssertionError: assert '3x^2' in 'ChatGPT\nA monomial is an algebraic expression consisting of a single term. In your options:\n3x\n2\n is a monomial because it consists of a single term, \n3x\n2\n, where the coefficient is \n3 and the variable part is \nx\n2\n.\n5x\n−3\n is not a monomial because it contains a negative exponent. Monomials must have non-negative integer exponents. The expression can be rewritten as \nx\n3\n5\n, which is not a single term.\nSo, the monomial is \n3x\n2\n.'">self = &lt;test_calculation_test.TestCalculation object at 0x000001D8053485E0&gt;, chatbot = &lt;ChatGPTScraper.ChatGpt object at 0x000001D80535C610&gt;
+
+    def test_arithmetic(self, chatbot):
+        chatbot.openChatGpt()
+        responseString = chatbot.sendFirstMessage("What is 4 * 4")
+        assert "16" in responseString
+    
+        responseString = chatbot.sendConversationMessage(
+            "Allen finds $109.43 while visiting Nevada. He wants to distribute his money evenly to his 4 friends. If $10.51 is lost on the way back to Denver, how much money will each of his friends receive when he returns?",
+            5)
+        assert "24.73" in responseString
+    
+        responseString = chatbot.sendConversationMessage("Which of these is a monomial?: 3x^2 or 5x^-3", 7)
+&gt;       assert "3x^2" in responseString
+E       AssertionError: assert '3x^2' in 'ChatGPT\nA monomial is an algebraic expression consisting of a single term. In your options:\n3x\n2\n is a monomial because it consists of a single term, \n3x\n2\n, where the coefficient is \n3 and the variable part is \nx\n2\n.\n5x\n−3\n is not a monomial because it contains a negative exponent. Monomials must have non-negative integer exponents. The expression can be rewritten as \nx\n3\n5\n, which is not a single term.\nSo, the monomial is \n3x\n2\n.'
+
+unitTests\test_calculation_test.py:26: AssertionError</failure></testcase><testcase classname="unitTests.test_calculation_test.TestCalculation" name="test_wordProblems" time="60.535"><failure message="AssertionError: assert '8.10' in 'ChatGPT\nTo find the acceleration of the car, you can use the equation of motion:\nd=v\ni\nt+\n2\n1\nat\n2\nWhere:\nd is the distance traveled (which is 110 m),\nv\ni\n is the initial velocity (which is 0 m/s because the car starts from rest),\na is the acceleration of the car, and\nt is the time taken (which is 5.21 seconds).\nGiven:\nd=110m (distance traveled),\nv\ni\n=0m/s (initial velocity),\nt=5.21s (time taken).\nWe can rearrange the equation to solve for acceleration:\nd=\n2\n1\nat\n2\n2d=at\n2\na=\nt\n2\n2d\nSubstitute the given values into the equation:\na=\n(5.21s)\n2\n2×110m\na=\n27.1441s\n2\n220m\na≈8.1m/s\n2\nSo, the acceleration of the car is approximately \n8.1m/s\n2\n.'">self = &lt;test_calculation_test.TestCalculation object at 0x000001D805348760&gt;, chatbot = &lt;ChatGPTScraper.ChatGpt object at 0x000001D80535C610&gt;
+
+    def test_wordProblems(self, chatbot):
+        chatbot.openChatGpt()
+        responseString = chatbot.sendFirstMessage("An airplane accelerates down a runway at 3.20 m/s2 for 32.8 s until is finally lifts off the ground. Determine the distance traveled before takeoff.")
+        assert "1720" in responseString
+    
+        responseString = chatbot.sendConversationMessage(
+            "A car starts from rest and accelerates uniformly over a time of 5.21 seconds for a distance of 110 m. Determine the acceleration of the car.",
+            5)
+&gt;       assert "8.10" in responseString
+E       AssertionError: assert '8.10' in 'ChatGPT\nTo find the acceleration of the car, you can use the equation of motion:\nd=v\ni\nt+\n2\n1\nat\n2\nWhere:\nd is the distance traveled (which is 110 m),\nv\ni\n is the initial velocity (which is 0 m/s because the car starts from rest),\na is the acceleration of the car, and\nt is the time taken (which is 5.21 seconds).\nGiven:\nd=110m (distance traveled),\nv\ni\n=0m/s (initial velocity),\nt=5.21s (time taken).\nWe can rearrange the equation to solve for acceleration:\nd=\n2\n1\nat\n2\n2d=at\n2\na=\nt\n2\n2d\nSubstitute the given values into the equation:\na=\n(5.21s)\n2\n2×110m\na=\n27.1441s\n2\n220m\na≈8.1m/s\n2\nSo, the acceleration of the car is approximately \n8.1m/s\n2\n.'
+
+unitTests\test_calculation_test.py:44: AssertionError</failure></testcase><testcase classname="unitTests.test_longMemory_test.TestLongMemory" name="test_arithmetic_chain" time="47.356"><failure message="AssertionError: assert '2√2' in 'ChatGPT\nThe square root of 8 is approximately 2.82842712475.'">self = &lt;test_longMemory_test.TestLongMemory object at 0x000001D80534BB50&gt;, chatbot = &lt;ChatGPTScraper.ChatGpt object at 0x000001D80539E7D0&gt;
+
+    def test_arithmetic_chain(self, chatbot):
+        chatbot.openChatGpt()
+        responseString = chatbot.sendFirstMessage("What is 2 + 2")
+        assert "4" in responseString
+    
+        responseString = chatbot.sendConversationMessage("square it", 5)
+        assert "16" in responseString
+    
+        responseString = chatbot.sendConversationMessage("divide it by 2", 7)
+        assert "8" in responseString
+    
+        responseString = chatbot.sendConversationMessage("find the square root of that value", 9)
+&gt;       assert "2√2" in responseString
+E       AssertionError: assert '2√2' in 'ChatGPT\nThe square root of 8 is approximately 2.82842712475.'
+
+unitTests\test_longMemory_test.py:27: AssertionError</failure></testcase><testcase classname="unitTests.test_longMemory_test.TestLongMemory" name="test_conversation" time="14.677"><failure message="AssertionError: The response should include a greeting.&#10;assert 'Hello' in 'ChatGPT\nNice to meet you, Joe! How can I assist you today?'">self = &lt;test_longMemory_test.TestLongMemory object at 0x000001D80534B430&gt;, chatbot = &lt;ChatGPTScraper.ChatGpt object at 0x000001D80539E7D0&gt;
+
+    def test_conversation(self, chatbot):
+        chatbot.openChatGpt()
+        responseString = chatbot.sendFirstMessage("Hi, My name is Joe")
+&gt;       assert "Hello" in responseString, "The response should include a greeting."
+E       AssertionError: The response should include a greeting.
+E       assert 'Hello' in 'ChatGPT\nNice to meet you, Joe! How can I assist you today?'
+
+unitTests\test_longMemory_test.py:36: AssertionError</failure></testcase><testcase classname="unitTests.test_translation_test.TestTranslation" name="test_japanese_translation" time="32.560"><failure message="assert 'How many classes does a student normally take in college?' in 'ChatGPT\n&quot;How many classes do college students usually take?&quot;'">self = &lt;test_translation_test.TestTranslation object at 0x000001D80539C790&gt;, chatbot = &lt;ChatGPTScraper.ChatGpt object at 0x000001D804AB37C0&gt;
+
+    def test_japanese_translation(self, chatbot):
+        chatbot.openChatGpt()
+        # "How many classes does a student normally take in college?"
+        responseString = chatbot.sendFirstMessage("大学生は通常いくつの授業を取るのか")
+        assert "大学" in responseString
+    
+        responseString = chatbot.sendConversationMessage("Translate: 大学生は通常いくつの授業を取るのか", 5)
+&gt;       assert "How many classes does a student normally take in college?" in responseString
+E       assert 'How many classes does a student normally take in college?' in 'ChatGPT\n"How many classes do college students usually take?"'
+
+unitTests\test_translation_test.py:22: AssertionError</failure></testcase><testcase classname="unitTests.test_translation_test.TestTranslation" name="test_invalid_translation" time="111.249" /></testsuite></testsuites>

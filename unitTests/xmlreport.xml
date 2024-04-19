@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="12" time="730.957" timestamp="2024-04-18T22:44:27.263978" hostname="WIN-EL7Q5TVUKSP"><testcase classname="test_basic_test.TestChatGpt" name="test_single" time="17.152" /><testcase classname="test_basic_test.TestChatGpt" name="test_multiple" time="26.361" /><testcase classname="test_calculation_test.TestCalculation" name="test_arithmetic" time="72.876"><failure message="assert '(-5/8, 0)' in &quot;ChatGPT\nTo solve \nx\n5\n+8&lt;0, we need to find the values of \nx that make the expression less than zero.\nFirst, let's find the values that make \nx\n5\n+8=0.\nx\n5\n+8=0\nx\n5\n=−8\n5=−8x\nx=−\n8\n5\nNow, since \nx cannot be equal to zero (as it would make the expression undefined), we need to consider the sign of \nx\n5\n for \nx&gt;0 and \nx&lt;0.\nFor \nx&gt;0, \nx\n5\n is positive, so \nx\n5\n+8&lt;0 is not possible in this interval.\nFor \nx&lt;0, \nx\n5\n is negative, so \nx\n5\n+8&lt;0 is possible.\nTherefore, the solution to \nx\n5\n+8&lt;0 in interval notation is \n(−∞,−\n8\n5\n).&quot;">self = &lt;test_calculation_test.TestCalculation object at 0x00000249B9B025F0&gt;, chatbot = &lt;ChatGPTScraper.ChatGpt object at 0x00000249BA374B20&gt;
+
+    def test_arithmetic(self, chatbot):
+        chatbot.openChatGpt()
+        responseString = chatbot.sendFirstMessage("What is 4 * 4")
+        assert "16" in responseString
+    
+        responseString = chatbot.sendConversationMessage(
+            "Allen finds $109.43 while visiting Nevada. He wants to distribute his money evenly to his 4 friends. If $10.51 is lost on the way back to Denver, how much money will each of his friends receive when he returns?",
+            5)
+        assert "24.73" in responseString
+    
+        responseString = chatbot.sendConversationMessage("Which of these is a monomial?: 3x^2 or 5x^-3", 7)
+        assert "\n3x\n2\n" in responseString
+    
+        responseString = chatbot.sendConversationMessage("5/x+8 &lt; 0 in interval notation", 9)
+&gt;       assert "(-5/8, 0)" in responseString
+E       assert '(-5/8, 0)' in "ChatGPT\nTo solve \nx\n5\n+8&lt;0, we need to find the values of \nx that make the expression less than zero.\nFirst, let's find the values that make \nx\n5\n+8=0.\nx\n5\n+8=0\nx\n5\n=−8\n5=−8x\nx=−\n8\n5\nNow, since \nx cannot be equal to zero (as it would make the expression undefined), we need to consider the sign of \nx\n5\n for \nx&gt;0 and \nx&lt;0.\nFor \nx&gt;0, \nx\n5\n is positive, so \nx\n5\n+8&lt;0 is not possible in this interval.\nFor \nx&lt;0, \nx\n5\n is negative, so \nx\n5\n+8&lt;0 is possible.\nTherefore, the solution to \nx\n5\n+8&lt;0 in interval notation is \n(−∞,−\n8\n5\n)."
+
+test_calculation_test.py:29: AssertionError</failure></testcase><testcase classname="test_calculation_test.TestCalculation" name="test_wordProblems" time="29.708"><failure message="AssertionError: assert '1720' in 'ChatGPT\nTo determine the distance traveled before takeoff, you can use the kinematic equation:\nd=v\ni\nt+\n2\n1\nat\n2\nWhere:\nd is the distance traveled\nv\ni\n is the initial velocity\na is the acceleration\nt is the time\nGiven:\nv\ni\n=0 (since the initial velocity of the airplane is at rest before acceleration)\na=3.20m/s\n2\nt=32.8s\nSubstitute the values into the equation:\nd=(0)×(32.8)+\n2\n1\n×(3.20)×(32.8)\n2\nd=0+\n2\n1\n×(3.20)×(1075.84)\nd=0+1.60×1075.84\nd=1721.34m\nSo, the distance traveled before takeoff is \n1721.34m.'">self = &lt;test_calculation_test.TestCalculation object at 0x00000249B9B027A0&gt;, chatbot = &lt;ChatGPTScraper.ChatGpt object at 0x00000249BA374B20&gt;
+
+    def test_wordProblems(self, chatbot):
+        chatbot.openChatGpt()
+        responseString = chatbot.sendFirstMessage("An airplane accelerates down a runway at 3.20 m/s2 for 32.8 s until is finally lifts off the ground. Determine the distance traveled before takeoff.")
+&gt;       assert "1720" in responseString
+E       AssertionError: assert '1720' in 'ChatGPT\nTo determine the distance traveled before takeoff, you can use the kinematic equation:\nd=v\ni\nt+\n2\n1\nat\n2\nWhere:\nd is the distance traveled\nv\ni\n is the initial velocity\na is the acceleration\nt is the time\nGiven:\nv\ni\n=0 (since the initial velocity of the airplane is at rest before acceleration)\na=3.20m/s\n2\nt=32.8s\nSubstitute the values into the equation:\nd=(0)×(32.8)+\n2\n1\n×(3.20)×(32.8)\n2\nd=0+\n2\n1\n×(3.20)×(1075.84)\nd=0+1.60×1075.84\nd=1721.34m\nSo, the distance traveled before takeoff is \n1721.34m.'
+
+test_calculation_test.py:39: AssertionError</failure></testcase><testcase classname="test_login_test.TestLogin" name="test_loging" time="65.171" /><testcase classname="test_login_test.TestLoginPlus" name="test_accessPlusModel" time="80.158" /><testcase classname="test_longMemory_test.TestLongMemory" name="test_arithmetic_chain" time="58.533" /><testcase classname="test_longMemory_test.TestLongMemory" name="test_conversation" time="36.248"><failure message="AssertionError: The response should include a type of music.&#10;assert 'music' in 'ChatGPT\nI don\'t have personal preferences like humans do, but I\'ve seen a lot of people enjoying &quot;Bohemian Rhapsody&quot; by Queen. It\'s a classic! What about you? Do you have a favorite song?'">self = &lt;test_longMemory_test.TestLongMemory object at 0x00000249BA375BD0&gt;, chatbot = &lt;ChatGPTScraper.ChatGpt object at 0x00000249BA3739D0&gt;
+
+    def test_conversation(self, chatbot):
+        chatbot.openChatGpt()
+        responseString = chatbot.sendFirstMessage("Hi, My name is Joe")
+        assert "Joe" in responseString, "The response should include the name."
+    
+        responseString = chatbot.sendConversationMessage("What is my name?", 5)
+        assert "Joe" or "joe" in responseString, "The response should include Joe."
+    
+        responseString = chatbot.sendConversationMessage("That's nice, what is your favorite song?", 7)
+&gt;       assert "music" in responseString, "The response should include a type of music."
+E       AssertionError: The response should include a type of music.
+E       assert 'music' in 'ChatGPT\nI don\'t have personal preferences like humans do, but I\'ve seen a lot of people enjoying "Bohemian Rhapsody" by Queen. It\'s a classic! What about you? Do you have a favorite song?'
+
+test_longMemory_test.py:42: AssertionError</failure></testcase><testcase classname="test_translation_test.TestTranslation" name="test_japanese_translation" time="74.998" /><testcase classname="test_translation_test.TestTranslation" name="test_invalid_translation" time="93.890" /><testcase classname="test_unethical_test.TestUnethical" name="test_unethicalPassages" time="63.541" /><testcase classname="test_unethical_test.TestUnethical" name="test_unethicalRange" time="111.992" /></testsuite></testsuites>
