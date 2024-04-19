@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="5" skipped="0" tests="7" time="241.310" timestamp="2024-04-11T00:46:11.003639" hostname="WIN-EL7Q5TVUKSP"><testcase classname="basic_test.TestChatGpt" name="test_single" time="15.867"><failure message="AssertionError: The response should include a greeting.&#10;assert 'Hello' in 'ChatGPT\nHi there! How can I assist you today?'">self = &lt;basic_test.TestChatGpt object at 0x000001A405B3EDA0&gt;, chatbot = &lt;ChatGPTScraper.ChatGpt object at 0x000001A405B3F940&gt;
+
+    def test_single(self, chatbot):
+        chatbot.openChatGpt()
+        responseString = chatbot.sendFirstMessage("Hello ChatGPT")
+        print("\n", responseString)
+&gt;       assert "Hello" in responseString, "The response should include a greeting."
+E       AssertionError: The response should include a greeting.
+E       assert 'Hello' in 'ChatGPT\nHi there! How can I assist you today?'
+
+basic_test.py:19: AssertionError</failure></testcase><testcase classname="basic_test.TestChatGpt" name="test_multiple" time="24.494" /><testcase classname="calculation_test.TestCalculation" name="test_arithmetic" time="35.534"><failure message="assert '24.73' in &quot;ChatGPT\nTo find out how much money each friend will receive after Allen distributes his money evenly and accounts fo...unded to two decimal places)\nSo, each of Allen's friends will receive approximately $16.85 when he returns to Denver.&quot;">self = &lt;calculation_test.TestCalculation object at 0x000001A407E31CC0&gt;, chatbot = &lt;ChatGPTScraper.ChatGpt object at 0x000001A407EC6B30&gt;
+
+    def test_arithmetic(self, chatbot):
+        chatbot.openChatGpt()
+        responseString = chatbot.sendFirstMessage("What is 4 * 4")
+        assert "16" in responseString
+    
+        responseString = chatbot.sendConversationMessage(
+            "Allen finds $109.43 while visiting Nevada. He wants to distribute his money evenly to his 4 friends. If $10.51 is lost on the way back to Denver, how much money will each of his friends receive when he returns?",
+            5)
+&gt;       assert "24.73" in responseString
+E       assert '24.73' in "ChatGPT\nTo find out how much money each friend will receive after Allen distributes his money evenly and accounts fo...unded to two decimal places)\nSo, each of Allen's friends will receive approximately $16.85 when he returns to Denver."
+
+calculation_test.py:23: AssertionError</failure></testcase><testcase classname="longMemory_test.TestLongMemory" name="test_arithmetic_chain" time="46.319"><failure message="AssertionError: assert '2√2' in 'ChatGPT\nThe square root of 8 is approximately 2.83.'">self = &lt;longMemory_test.TestLongMemory object at 0x000001A407E5C640&gt;, chatbot = &lt;ChatGPTScraper.ChatGpt object at 0x000001A407E67760&gt;
+
+    def test_arithmetic_chain(self, chatbot):
+        chatbot.openChatGpt()
+        responseString = chatbot.sendFirstMessage("What is 2 + 2")
+        assert "4" in responseString
+    
+        responseString = chatbot.sendConversationMessage("square it", 5)
+        assert "16" in responseString
+    
+        responseString = chatbot.sendConversationMessage("divide it by 2", 7)
+        assert "8" in responseString
+    
+        responseString = chatbot.sendConversationMessage("find the square root of that value", 9)
+&gt;       assert "2√2" in responseString
+E       AssertionError: assert '2√2' in 'ChatGPT\nThe square root of 8 is approximately 2.83.'
+
+longMemory_test.py:27: AssertionError</failure></testcase><testcase classname="longMemory_test.TestLongMemory" name="test_conversation" time="13.158"><failure message="AssertionError: The response should include a greeting.&#10;assert 'Hello' in &quot;ChatGPT\nNice to meet you, Joe! How's your day going?&quot;">self = &lt;longMemory_test.TestLongMemory object at 0x000001A407E5C2B0&gt;, chatbot = &lt;ChatGPTScraper.ChatGpt object at 0x000001A407E67760&gt;
+
+    def test_conversation(self, chatbot):
+        chatbot.openChatGpt()
+        responseString = chatbot.sendFirstMessage("Hi, My name is Joe")
+&gt;       assert "Hello" in responseString, "The response should include a greeting."
+E       AssertionError: The response should include a greeting.
+E       assert 'Hello' in "ChatGPT\nNice to meet you, Joe! How's your day going?"
+
+longMemory_test.py:36: AssertionError</failure></testcase><testcase classname="translation_test.TestTranslation" name="test_japanese_translation" time="27.588"><failure message="assert 'How many classes does a student normally take in college?' in 'ChatGPT\n&quot;How many classes do college students usually take?&quot;'">self = &lt;translation_test.TestTranslation object at 0x000001A407EC5570&gt;, chatbot = &lt;ChatGPTScraper.ChatGpt object at 0x000001A407E58C70&gt;
+
+    def test_japanese_translation(self, chatbot):
+        chatbot.openChatGpt()
+        # "How many classes does a student normally take in college?"
+        responseString = chatbot.sendFirstMessage("大学生は通常いくつの授業を取るのか")
+        assert "大学" in responseString
+    
+        responseString = chatbot.sendConversationMessage("Translate: 大学生は通常いくつの授業を取るのか", 5)
+&gt;       assert "How many classes does a student normally take in college?" in responseString
+E       assert 'How many classes does a student normally take in college?' in 'ChatGPT\n"How many classes do college students usually take?"'
+
+translation_test.py:22: AssertionError</failure></testcase><testcase classname="translation_test.TestTranslation" name="test_invalid_translation" time="77.876" /></testsuite></testsuites>
